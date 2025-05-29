@@ -2,65 +2,37 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Lanches do Nono</title>
+
   <style>
     body {
       margin: 0;
-      font-family: 'Arial', sans-serif;
-      background-color: #ffffff;
+      font-family: Arial, sans-serif;
+      background-color: #fff;
       color: #003366;
     }
-
-    #mensagem {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #4CAF50;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 8px;
-      display: none;
-      z-index: 9999;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      font-weight: bold;
-    }
-
-    #top-lanches {
-      background-color: #ffecb3;
-      padding: 10px;
-      text-align: center;
-      font-weight: bold;
-      font-size: 18px;
-      color: #333;
-    }
-
     header {
       background-color: #003366;
-      color: white;
+      color: #fff;
       padding: 20px;
       text-align: center;
     }
-
     nav {
       background-color: #0055aa;
       padding: 10px;
       text-align: center;
     }
-
     nav a {
       color: white;
       margin: 0 15px;
       text-decoration: none;
       font-weight: bold;
     }
-
     .container {
       padding: 30px;
       text-align: center;
     }
-
     .card {
       background-color: #e6f0ff;
       border: 1px solid #ccc;
@@ -68,9 +40,7 @@
       padding: 20px;
       margin: 15px auto;
       max-width: 400px;
-      transition: all 0.3s ease;
     }
-
     .button {
       background-color: #003366;
       color: white;
@@ -78,36 +48,78 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
     }
-
     .button:hover {
       background-color: #0055aa;
     }
-
     ul {
       list-style: none;
       padding: 0;
     }
-
     li {
-      margin-bottom: 8px;
-      transition: all 0.3s ease;
+      margin-bottom: 10px;
     }
-
-    .admin-section {
-      margin-top: 20px;
+    #mensagemAdicao {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #0055aa;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      display: none;
+      font-weight: bold;
+    }
+    #pix-info {
+      margin-top: 40px;
+      background-color: #f3f3f3;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
       text-align: left;
     }
   </style>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, Timestamp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+
+    // Configuração Firebase (sua)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBgv7kMMY77J6lP0psBCIT36uw0-cd4RnE",
+      authDomain: "feirinha-nono.firebaseapp.com",
+      projectId: "feirinha-nono",
+      storageBucket: "feirinha-nono.firebasestorage.app",
+      messagingSenderId: "832019308519",
+      appId: "1:832019308519:web:0d87387d6c64ebb7476742"
+    };
+
+    // Inicializa Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Função para salvar pedido no Firestore
+    window.salvarPedidoFirestore = async function(pedido) {
+      try {
+        const docRef = await addDoc(collection(db, "pedidos"), {
+          pedido,
+          criadoEm: Timestamp.now()
+        });
+        console.log("Pedido salvo com ID: ", docRef.id);
+        return true;
+      } catch (e) {
+        console.error("Erro ao salvar pedido: ", e);
+        return false;
+      }
+    };
+  </script>
 </head>
 <body>
-  <div id="mensagem"></div>
-
-  <div id="top-lanches">
-    Hoje temos: <span id="lanchesDiaTopo">Cuscuz, Bolo de Pote e Cremosinho!</span>
-  </div>
-
   <header>
     <h1>Lanches do Nono</h1>
     <p>Sabores feitos com carinho para ajudar na minha formatura!</p>
@@ -115,66 +127,61 @@
 
   <nav>
     <a href="#cardapio">Cardápio</a>
-    <a href="#lanchesDoDia">Lanches do Dia</a>
     <a href="#carrinho">Carrinho</a>
   </nav>
 
   <div class="container" id="cardapio">
-    <h2>Cardápio</h2>
-    <!-- Cards dos produtos -->
-    <div class="card"><h3>Brigadeiro</h3><p>Tradicional, docinho e delicioso.</p><p><strong>R$ 1,00</strong></p><button class="button" onclick="adicionar('Brigadeiro')">Adicionar</button></div>
-    <div class="card"><h3>Sanduíche Natural</h3><p>Fresco, saudável e saboroso.</p><p><strong>R$ 5,00</strong></p><button class="button" onclick="adicionar('Sanduíche Natural')">Adicionar</button></div>
-    <div class="card"><h3>Bolo</h3><p>Caseiro e fofinho.</p><p><strong>R$ 5,00</strong></p><button class="button" onclick="adicionar('Bolo')">Adicionar</button></div>
-    <div class="card"><h3>Refrigerante no Copo</h3><p>Refrescante e gelado.</p><p><strong>R$ 1,50</strong></p><button class="button" onclick="adicionar('Refrigerante no Copo')">Adicionar</button></div>
-    <div class="card"><h3>Refrigerante Garrafinha</h3><p>Ideal para levar com você.</p><p><strong>R$ 3,00</strong></p><button class="button" onclick="adicionar('Refrigerante Garrafinha')">Adicionar</button></div>
-    <div class="card"><h3>Cuscuz</h3><p>Delicioso e tradicional.</p><p><strong>R$ 5,00</strong></p><button class="button" onclick="adicionar('Cuscuz')">Adicionar</button></div>
-    <div class="card"><h3>Cremosinho</h3><p>Gelado e saboroso, perfeito para o calor.</p><p><strong>R$ 1,00</strong></p><button class="button" onclick="adicionar('Cremosinho')">Adicionar</button></div>
-    <div class="card"><h3>Bolo de Pote</h3><p>Bolo com camadas cremosas no pote.</p><p><strong>R$ 10,00</strong></p><button class="button" onclick="adicionar('Bolo de Pote')">Adicionar</button></div>
-    <div class="card"><h3>Salgado no Copo</h3><p>Vários salgadinhos servidos no copo.</p><p><strong>R$ 5,00</strong></p><button class="button" onclick="adicionar('Salgado no Copo')">Adicionar</button></div>
-    <div class="card"><h3>Pipoca</h3><p>Docinha ou salgada, você escolhe!</p><p><strong>R$ 1,00</strong></p><button class="button" onclick="adicionar('Pipoca')">Adicionar</button></div>
-  </div>
-
-  <div class="container" id="lanchesDoDia">
-    <h2>Lanches do Dia</h2>
-    <div>
-      <p>Hoje temos: <strong id="lanchesDia">Cuscuz, Bolo de Pote e Cremosinho!</strong></p>
-    </div>
-    <div class="admin-section">
-      <button class="button" onclick="mostrarFormularioAdmin()">Editar Lanches do Dia</button>
-      <div id="formularioAdmin" style="display:none;">
-        <input type="password" id="senha" placeholder="Digite a senha para editar" />
-        <button class="button" onclick="editarLanches()">Enviar</button>
-      </div>
-    </div>
+    <h2>Cardápio da Semana</h2>
+    <div class="card"><h3>Cuscuz</h3><p>R$ 10,00</p><button class="button" onclick="adicionar('Cuscuz')">Adicionar</button></div>
+    <div class="card"><h3>Bolo de pote</h3><p>R$ 10,00</p><button class="button" onclick="adicionar('Bolo de pote')">Adicionar</button></div>
+    <div class="card"><h3>Mini pizza</h3><p>R$ 5,00</p><button class="button" onclick="adicionar('Mini pizza')">Adicionar</button></div>
+    <div class="card"><h3>Pipoca</h3><p>R$ 1,00</p><button class="button" onclick="adicionar('Pipoca')">Adicionar</button></div>
+    <div class="card"><h3>Refri (garrafa)</h3><p>R$ 3,50</p><button class="button" onclick="adicionar('Refri (garrafa)')">Adicionar</button></div>
+    <div class="card"><h3>Paçoca</h3><p>R$ 1,00</p><button class="button" onclick="adicionar('Paçoca')">Adicionar</button></div>
+    <div class="card"><h3>Pirulito</h3><p>R$ 0,50</p><button class="button" onclick="adicionar('Pirulito')">Adicionar</button></div>
+    <div class="card"><h3>Cremoso</h3><p>R$ 1,50</p><button class="button" onclick="adicionar('Cremoso')">Adicionar</button></div>
+    <div class="card"><h3>Refri (copo)</h3><p>R$ 2,00</p><button class="button" onclick="adicionar('Refri (copo)')">Adicionar</button></div>
   </div>
 
   <div class="container" id="carrinho">
     <h2>Carrinho</h2>
+    <input type="text" id="nomeAluno" placeholder="Digite o nome do aluno" style="padding:8px; width: 80%; max-width: 400px; margin-bottom: 10px;">
+    <input type="text" id="turmaAluno" placeholder="Digite a turma do aluno" style="padding:8px; width: 80%; max-width: 400px; margin-bottom: 20px;"><br>
+
     <div id="listaCarrinho">Seu carrinho está vazio.</div>
-    <div id="totalCarrinho" style="font-weight:bold; margin-top:10px;"></div>
+    <div id="totalCarrinho" style="margin-top:10px; font-weight:bold;"></div>
+
     <button class="button" onclick="limparCarrinho()">Limpar Carrinho</button>
-    <a class="button" id="linkWhatsapp" href="#" target="_blank" style="margin-left: 10px;">Enviar Pedido pelo WhatsApp</a>
+    <button class="button" id="botaoEnviarWhatsapp" style="margin-left:10px;">Enviar Pedido pelo WhatsApp</button>
+
+    <div id="pix-info">
+      <h3>Pagamento via PIX</h3>
+      <p><strong>Chave PIX:</strong> ab804ccc-480c-4274-a7d9-59d41c90c18d</p>
+      <p><strong>Nome:</strong> Ana Dandara Dos Santos Rodrigues</p>
+      <p>Após o pagamento, envie o comprovante junto com o pedido via WhatsApp.</p>
+    </div>
   </div>
+
+  <div id="mensagemAdicao"></div>
 
   <script>
     const carrinho = {};
     const precos = {
-      'Brigadeiro': 1.00,
-      'Sanduíche Natural': 5.00,
-      'Bolo': 5.00,
-      'Refrigerante no Copo': 1.50,
-      'Refrigerante Garrafinha': 3.00,
-      'Cuscuz': 5.00,
-      'Cremosinho': 1.00,
-      'Bolo de Pote': 10.00,
-      'Salgado no Copo': 5.00,
-      'Pipoca': 1.00
+      'Cuscuz': 10.00,
+      'Bolo de pote': 10.00,
+      'Mini pizza': 5.00,
+      'Pipoca': 1.00,
+      'Refri (garrafa)': 3.50,
+      'Paçoca': 1.00,
+      'Pirulito': 0.50,
+      'Cremoso': 1.50,
+      'Refri (copo)': 2.00
     };
 
     function adicionar(nome) {
       carrinho[nome] = (carrinho[nome] || 0) + 1;
       atualizarCarrinho();
-      mostrarMensagem(`${nome} foi adicionado ao carrinho!`);
+      mostrarMensagem(`${nome} adicionado ao carrinho!`);
     }
 
     function atualizarCarrinho() {
@@ -185,7 +192,6 @@
       if (nomes.length === 0) {
         lista.innerHTML = 'Seu carrinho está vazio.';
         totalElem.textContent = '';
-        document.getElementById('linkWhatsapp').href = '#';
         return;
       }
 
@@ -204,10 +210,6 @@
       html += '</ul>';
       lista.innerHTML = html;
       totalElem.textContent = `Total: R$ ${total.toFixed(2)}`;
-
-      const textoPedido = nomes.map(nome => `${nome} (x${carrinho[nome]})`).join('\n') + `\nTotal: R$ ${total.toFixed(2)}`;
-      const texto = encodeURIComponent("Olá! Gostaria de pedir:\n" + textoPedido);
-      document.getElementById('linkWhatsapp').href = `https://wa.me/559884078358?text=${texto}`;
     }
 
     function alterarQuantidade(nome, valor) {
@@ -216,43 +218,4 @@
       atualizarCarrinho();
     }
 
-    function limparCarrinho() {
-      for (let item in carrinho) {
-        delete carrinho[item];
-      }
-      atualizarCarrinho();
-    }
-
-    function mostrarFormularioAdmin() {
-      document.getElementById('formularioAdmin').style.display = 'block';
-    }
-
-    function editarLanches() {
-      const senha = document.getElementById('senha').value;
-      const senhaCorreta = "10275";
-
-      if (senha === senhaCorreta) {
-        const novos = prompt("Digite os lanches do dia separados por vírgula:");
-        if (novos) {
-          document.getElementById('lanchesDia').textContent = novos;
-          document.getElementById('lanchesDiaTopo').textContent = novos;
-          mostrarMensagem("Lanches do dia atualizados!");
-        }
-      } else {
-        mostrarMensagem("Senha incorreta!");
-      }
-
-      document.getElementById('formularioAdmin').style.display = 'none';
-    }
-
-    function mostrarMensagem(texto) {
-      const msg = document.getElementById('mensagem');
-      msg.textContent = texto;
-      msg.style.display = 'block';
-      setTimeout(() => {
-        msg.style.display = 'none';
-      }, 2000);
-    }
-  </script>
-</body>
-</html>
+    function limparCarrinho
